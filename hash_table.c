@@ -56,14 +56,39 @@ node_t *hash_table_lookup(char *value) {
     return NULL;
 }
 
+node_t *hash_table_delete(char *value) {
+    int idx = hash(value);
+    node_t *node = hash_table[idx];
+    // check head
+    if (strncmp(node->value, value, MAX_LENGTH) == 0) {
+        hash_table[idx] = node->next;
+        return node;
+    }
+    // check the remaining nodes
+    while (node->next) {
+        if (strncmp(node->next->value, value, MAX_LENGTH) == 0) {
+            node_t *to_remove = node->next;
+            node->next = node->next->next;
+            return to_remove;
+        }
+        node = node->next;
+    }
+    // not found
+    return NULL;
+}
+
 int main(int argc, char *argv[]) {
     init_table();
     node_t node1 = {.value = "test", .next = NULL};
     node_t node2 = {.value = "abc", .next = NULL};
     node_t node3 = {.value = "hello", .next = NULL};
+    node_t node4 = {.value = "samy", .next = NULL};
     hash_table_insert(&node1);
     hash_table_insert(&node2);
     hash_table_insert(&node3);
+    hash_table_insert(&node4);
+    hash_table_print();
+    hash_table_delete("hello");
     hash_table_print();
     node_t *tmp = hash_table_lookup("test");
     if (tmp) printf("Found node\n");
