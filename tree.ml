@@ -99,18 +99,35 @@ let add t x =
     aux_ascend t (n + 1);
     t.(0) <- n + 1;;
 
+let make_heap t =
+    let n = t.(0) in
+    for k = 1 to n do
+        aux_ascend t k
+    done;;
+
 let rec aux_descend t k n =
-    if 2 * k < n && t.(k) < t.(2 * k) then begin
-        swap t k (2 * k);
-        aux_descend t (2 * k) n;
-    end
-    else if 2 * k + 1 < n && t.(k) < t.(2 * k + 1) then begin
-        swap t k (2 * k + 1);
-        aux_descend t (2 * k + 1) n;
-    end;;
+    if (2 * k < n && t.(k) < t.(2 * k)) ||  (2 * k + 1 < n && t.(k) < t.(2 * k + 1)) then
+        if 2 * k + 1 < n && t.(2 * k) < t.(2 * k + 1) then
+            begin
+                swap t k (2 * k + 1);
+                aux_descend t (2 * k + 1) n;
+            end
+        else begin
+            swap t k (2 * k);
+            aux_descend t (2 * k) n;
+        end;;
 
 let delete t k =
     let n = t.(0) in
     swap t k n;
     aux_descend t k n;
     t.(0) <- n + 1;;
+
+let heap_sort t =
+    make_heap t;
+    let n = t.(0) in
+    swap t 1 n;
+    for k = n - 1 downto 2 do
+        aux_descend t 1 k;
+        swap t 1 k;
+    done;;
