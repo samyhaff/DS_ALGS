@@ -77,3 +77,40 @@ let rec delete t x = match t with
     | Node(y, l, r) when y = x -> merge l r
     | Node(y, l, r) when y < x -> Node(y, l, delete r x)
     | Node(y, l, r)  -> Node(y, delete l x, r);;
+
+(* heap *)
+
+(* array of size N + 1 were array(0) = n *)
+
+let swap t m n = let temp = t.(m) in t.(m) <- t.(n); t.(n) <- temp;;
+
+let rec aux_ascend t n =
+    if n > 1 then begin
+        let m = n / 2 in
+        if t.(m) < t.(n) then begin
+            swap t m n;
+            aux_ascend t m;
+        end;
+    end;;
+
+let add t x =
+    let n = t.(0) in
+    t.(n+1) <- x;
+    aux_ascend t (n + 1);
+    t.(0) <- n + 1;;
+
+let rec aux_descend t k n =
+    if 2 * k < n && t.(k) < t.(2 * k) then begin
+        swap t k (2 * k);
+        aux_descend t (2 * k) n;
+    end
+    else if 2 * k + 1 < n && t.(k) < t.(2 * k + 1) then begin
+        swap t k (2 * k + 1);
+        aux_descend t (2 * k + 1) n;
+    end;;
+
+let delete t k =
+    let n = t.(0) in
+    swap t k n;
+    aux_descend t k n;
+    t.(0) <- n + 1;;
